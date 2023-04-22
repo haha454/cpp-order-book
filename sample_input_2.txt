@@ -1,0 +1,11 @@
+ buyid23    SELL instrument2    4       800
+ buyid22   SELL instrument2    3   900
+ buyid13    BUY instrument1    10       800
+ sellid34 BUY instrument3 5 2000
+   buyid21   SELL    instrument2      10   1000  
+ sellid14 SELL instrument1 5 500
+ buyid32   SELL instrument3    5   1000
+  buyid11   BUY    instrument1      4   1000  
+ buyid12   BUY instrument1    3   900
+   buyid31   SELL    instrument3      10   1000  
+ sellid24 BUY instrument2 5 2000
