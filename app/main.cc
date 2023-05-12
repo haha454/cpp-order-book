@@ -31,9 +31,17 @@ int main() {
     }
 
     std::istringstream iss(line);
-    iss >> order_id >> side >> instrument >> quantity >> price;
-    std::cout << matching_engine.Match(side, std::move(order_id),
-                                       std::move(instrument), quantity, price);
+    std::string instruction;
+    iss >> instruction;
+    if (instruction == "CANCEL") {
+      iss >> instrument >> order_id;
+      matching_engine.Cancel(instrument, order_id);
+    } else {
+      order_id = instruction;
+      iss >> side >> instrument >> quantity >> price;
+      std::cout << matching_engine.Match(
+          side, std::move(order_id), std::move(instrument), quantity, price);
+    }
   }
 
   std::cout << std::endl << matching_engine.PurgeOrdersSorted();

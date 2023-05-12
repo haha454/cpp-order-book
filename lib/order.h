@@ -2,6 +2,7 @@
 #define ORDER_H_
 
 #include <string>
+#include <memory>
 
 namespace matching_engine {
 class OrderBuilder;
@@ -14,16 +15,18 @@ private:
   Side side_;
   std::string id_, instrument_;
   unsigned int quantity_, price_, timestamp_;
+  bool is_cancelled_;
 
-  Order() = default;
   friend class OrderBuilder;
   friend class OrderLesserPrice;
   friend class OrderGreaterPrice;
   friend class OrderSmallerTimestampWithSellPriority;
-  friend std::ostream &operator<<(std::ostream &, const Order &);
+  friend std::ostream &operator<<(std::ostream &, std::shared_ptr<const Order>);
 
 public:
+  Order() = default;
   bool operator==(const Order &) const;
+  bool operator!=(const Order &) const;
   static OrderBuilder Builder();
   void ReduceQuantity(unsigned int);
   Side GetSide() const;
@@ -31,11 +34,13 @@ public:
   const std::string &GetInstrument() const;
   unsigned int GetQuantity() const;
   unsigned int GetPrice() const;
+  bool IsCancelled() const;
+  void Cancel();
 };
 
 class OrderBuilder {
 private:
-  Order order_;
+  std::shared_ptr<Order> order_;
 
 public:
   OrderBuilder();
@@ -45,22 +50,22 @@ public:
   OrderBuilder &SetQuantity(int);
   OrderBuilder &SetPrice(int);
   OrderBuilder &SetTimestamp(int);
-  Order Build();
+  std::shared_ptr<Order> Build();
 };
 
 class OrderLesserPrice {
 public:
-  bool operator()(const Order &, const Order &) const;
+  bool operator()(std::shared_ptr<const Order>, std::shared_ptr<const Order>) const;
 };
 
 class OrderGreaterPrice {
 public:
-  bool operator()(const Order &, const Order &) const;
+  bool operator()(std::shared_ptr<const Order>, std::shared_ptr<const Order>) const;
 };
 
 class OrderSmallerTimestampWithSellPriority {
 public:
-  bool operator()(const Order &, const Order &) const;
+  bool operator()(std::shared_ptr<const Order>, std::shared_ptr<const Order>) const;
 };
 } // namespace matching_engine
 #endif

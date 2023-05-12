@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 
-
 #include "order.h"
 
 namespace matching_engine {
@@ -29,10 +28,11 @@ std::vector<Trade> MatchingEngine::Match(Side side, std::string &&id,
                           .Build());
 }
 
-std::vector<Order> MatchingEngine::PurgeOrders(Side side) {
-  std::vector<Order> result;
+std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrders(Side side) {
+  std::vector<std::shared_ptr<Order>> result;
   for (auto &[_, engine] : engines_) {
-    std::vector<Order> engine_orders = engine.PurgeOrders(side);
+    std::vector<std::shared_ptr<Order>> engine_orders =
+        engine.PurgeOrders(side);
     result.insert(result.end(), std::make_move_iterator(engine_orders.begin()),
                   std::make_move_iterator(engine_orders.end()));
   }
@@ -40,7 +40,7 @@ std::vector<Order> MatchingEngine::PurgeOrders(Side side) {
   return result;
 }
 
-std::vector<Order> MatchingEngine::PurgeOrdersSorted() {
+std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrdersSorted() {
   auto result = PurgeOrders(Side::kSell);
   auto buy_orders = PurgeOrders(Side::kBuy);
   result.insert(result.end(), std::make_move_iterator(buy_orders.begin()),
@@ -51,4 +51,14 @@ std::vector<Order> MatchingEngine::PurgeOrdersSorted() {
 
   return result;
 }
+
+bool MatchingEngine::Cancel(const std::string &instrument,
+                            const std::string &order_id) {
+  if (!engines_.count(instrument)) {
+    return false;
+  }
+
+  return engines_[instrument].Cancel(order_id);
+}
+
 } // namespace matching_engine

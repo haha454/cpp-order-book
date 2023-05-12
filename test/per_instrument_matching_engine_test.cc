@@ -2,8 +2,11 @@
 
 #include <vector>
 
+#include <memory>
+
 #include "../lib/order.h"
 #include "../lib/trade.h"
+#include "order_assert_lib.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -260,32 +263,34 @@ TEST(PerInstrumentMatchingEngineTest, PurgeOrdersReturnRemainingOrders) {
                    .SetTimestamp(92)
                    .Build());
 
-  EXPECT_EQ(engine.PurgeOrders(Side::kBuy),
-            (std::vector<Order>{Order::Builder()
-                                    .SetSide(Side::kBuy)
-                                    .SetId("some id")
-                                    .SetInstrument("some instrument")
-                                    .SetQuantity(5)
-                                    .SetPrice(500)
-                                    .SetTimestamp(90)
-                                    .Build(),
-                                Order::Builder()
-                                    .SetSide(Side::kBuy)
-                                    .SetId("some id 2")
-                                    .SetInstrument("some instrument")
-                                    .SetQuantity(3)
-                                    .SetPrice(400)
-                                    .SetTimestamp(91)
-                                    .Build()}));
-  EXPECT_EQ(engine.PurgeOrders(Side::kSell),
-            (std::vector<Order>{Order::Builder()
-                                    .SetSide(Side::kSell)
-                                    .SetId("some id 3")
-                                    .SetInstrument("some instrument")
-                                    .SetQuantity(3)
-                                    .SetPrice(900)
-                                    .SetTimestamp(92)
-                                    .Build()}));
+  EXPECT_PRED2(
+      AreOrderPointerVectorSame, engine.PurgeOrders(Side::kBuy),
+      (std::vector<std::shared_ptr<Order>>{Order::Builder()
+                                               .SetSide(Side::kBuy)
+                                               .SetId("some id")
+                                               .SetInstrument("some instrument")
+                                               .SetQuantity(5)
+                                               .SetPrice(500)
+                                               .SetTimestamp(90)
+                                               .Build(),
+                                           Order::Builder()
+                                               .SetSide(Side::kBuy)
+                                               .SetId("some id 2")
+                                               .SetInstrument("some instrument")
+                                               .SetQuantity(3)
+                                               .SetPrice(400)
+                                               .SetTimestamp(91)
+                                               .Build()}));
+  EXPECT_PRED2(
+      AreOrderPointerVectorSame, engine.PurgeOrders(Side::kSell),
+      (std::vector<std::shared_ptr<Order>>{Order::Builder()
+                                               .SetSide(Side::kSell)
+                                               .SetId("some id 3")
+                                               .SetInstrument("some instrument")
+                                               .SetQuantity(3)
+                                               .SetPrice(900)
+                                               .SetTimestamp(92)
+                                               .Build()}));
 }
 
 TEST(PerInstrumentMatchingEngineTest,
