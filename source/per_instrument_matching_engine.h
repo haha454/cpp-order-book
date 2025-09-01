@@ -6,8 +6,8 @@
 #include <queue>
 #include <unordered_map>
 
-#include "order.h"
 #include "trade.h"
+#include "order.h"
 
 namespace matching_engine {
 class PerInstrumentMatchingEngine {
@@ -18,17 +18,18 @@ private:
 
   template <typename TargetOrderQueueComp, typename UnmatchedOrderQueueComp,
             typename UnmatchPredicate>
-  std::vector<Trade> Match(std::shared_ptr<Order>, std::vector<std::shared_ptr<Order>> &,
-                           std::vector<std::shared_ptr<Order>> &);
+  auto Match(std::shared_ptr<Order>,
+             std::vector<std::shared_ptr<Order>>&,
+             std::vector<std::shared_ptr<Order>>&) -> std::vector<Trade>;
 
-  template <typename TargetOrderQueueComp> void PopOrder(std::vector<std::shared_ptr<Order>> &);
+  template <typename TargetOrderQueueComp> auto PopOrder(std::vector<std::shared_ptr<Order>>&) -> void;
   template <typename TargetOrderQueueComp>
-  void PopCancelledOrder(std::vector<std::shared_ptr<Order>> &);
+  auto PopCancelledOrder(std::vector<std::shared_ptr<Order>>&) -> void;
 
 public:
-  std::vector<Trade> Match(std::shared_ptr<Order>);
-  std::vector<std::shared_ptr<Order>> PurgeOrders(Side);
-  bool Cancel(const std::string &);
+  auto Match(std::shared_ptr<Order>) -> std::vector<Trade>;
+  auto PurgeOrders(Side) -> std::vector<std::shared_ptr<Order>>;
+  auto Cancel(const std::string&) -> bool;
 };
 } // namespace matching_engine
 #endif

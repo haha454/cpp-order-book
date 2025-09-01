@@ -1,18 +1,20 @@
-#include "matching_engine.h"
-
 #include <algorithm>
 #include <iostream>
 #include <vector>
+
+#include "matching_engine.h"
 
 #include "order.h"
 
 namespace matching_engine {
 MatchingEngine::MatchingEngine() : order_count_{0} {}
 
-std::vector<Trade> MatchingEngine::Match(Side side, std::string &&id,
-                                         std::string &&instrument,
-                                         unsigned int quantity,
-                                         unsigned int price) {
+auto MatchingEngine::Match(Side side,
+                           std::string&& id,
+                           std::string&& instrument,
+                           unsigned int quantity,
+                           unsigned int price) -> std::vector<Trade>
+{
   if (!quantity) {
     return {};
   }
@@ -28,7 +30,9 @@ std::vector<Trade> MatchingEngine::Match(Side side, std::string &&id,
                           .Build());
 }
 
-std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrders(Side side) {
+auto MatchingEngine::PurgeOrders(Side side)
+    -> std::vector<std::shared_ptr<Order>>
+{
   std::vector<std::shared_ptr<Order>> result;
   for (auto &[_, engine] : engines_) {
     std::vector<std::shared_ptr<Order>> engine_orders =
@@ -40,7 +44,8 @@ std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrders(Side side) {
   return result;
 }
 
-std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrdersSorted() {
+auto MatchingEngine::PurgeOrdersSorted() -> std::vector<std::shared_ptr<Order>>
+{
   auto result = PurgeOrders(Side::kSell);
   auto buy_orders = PurgeOrders(Side::kBuy);
   result.insert(result.end(), std::make_move_iterator(buy_orders.begin()),
@@ -52,8 +57,9 @@ std::vector<std::shared_ptr<Order>> MatchingEngine::PurgeOrdersSorted() {
   return result;
 }
 
-bool MatchingEngine::Cancel(const std::string &instrument,
-                            const std::string &order_id) {
+auto MatchingEngine::Cancel(const std::string& instrument,
+                            const std::string& order_id) -> bool
+{
   if (!engines_.count(instrument)) {
     return false;
   }

@@ -1,29 +1,10 @@
 # Build
-```
-docker build -t matching_engine .
-```
 
-# Test
-```
-docker run -i --rm matching_engine bazel test --test_output=all //test:all_tests
-```
+See the [BUILDING](BUILDING.md) document.
 
-Alternatively,
+# Develop
 
-```
-./test.sh
-```
-
-# Run the order matching engine
-```
-docker run -i --rm matching_engine bazel run //app:main 
-```
-
-Alternatively,
-
-```
-cat sample_input.txt | ./run.sh
-```
+See the [HACKING](HACKING.md) document.
 
 # Functional design
 Essentially the order matching engine enables us to quickly find best match sell orders for a buy order, or buy orders for a seller order, where the best match is defined by the highest prices for matching a sell order, or the lowest prices for matching a buy order.
