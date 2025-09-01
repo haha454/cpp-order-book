@@ -1,20 +1,21 @@
-#include "per_instrument_matching_engine.h"
-
-#include <assert.h>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <queue>
 #include <stdexcept>
 
-#include "order.h"
+#include "per_instrument_matching_engine.h"
+
+#include <assert.h>
+
 #include "trade.h"
+#include "order.h"
 
 namespace matching_engine {
 
 template <typename TargetOrderQueueComp>
-void PerInstrumentMatchingEngine::PopOrder(
-    std::vector<std::shared_ptr<Order>> &target_orders) {
+auto PerInstrumentMatchingEngine::PopOrder(
+    std::vector<std::shared_ptr<Order>> &target_orders) -> void {
   assert(target_orders.size());
   std::pop_heap(target_orders.begin(), target_orders.end(),
                 TargetOrderQueueComp());
@@ -23,8 +24,8 @@ void PerInstrumentMatchingEngine::PopOrder(
 }
 
 template <typename TargetOrderQueueComp>
-void PerInstrumentMatchingEngine::PopCancelledOrder(
-    std::vector<std::shared_ptr<Order>> &target_orders) {
+auto PerInstrumentMatchingEngine::PopCancelledOrder(
+    std::vector<std::shared_ptr<Order>> &target_orders) -> void {
   while (!target_orders.empty() && target_orders.front()->IsCancelled()) {
     PopOrder<TargetOrderQueueComp>(target_orders);
   }
@@ -32,10 +33,10 @@ void PerInstrumentMatchingEngine::PopCancelledOrder(
 
 template <typename TargetOrderQueueComp, typename UnmatchedOrderQueueComp,
           typename UnmatchPredicate>
-std::vector<Trade> PerInstrumentMatchingEngine::Match(
+auto PerInstrumentMatchingEngine::Match(
     std::shared_ptr<Order> order,
     std::vector<std::shared_ptr<Order>> &target_orders,
-    std::vector<std::shared_ptr<Order>> &unmatched_orders) {
+    std::vector<std::shared_ptr<Order>> &unmatched_orders) -> std::vector<Trade> {
   std::vector<Trade> trades;
   PopCancelledOrder<TargetOrderQueueComp>(target_orders);
   while (!target_orders.empty() && order->GetQuantity() &&
@@ -68,8 +69,7 @@ std::vector<Trade> PerInstrumentMatchingEngine::Match(
   return trades;
 }
 
-std::vector<Trade>
-PerInstrumentMatchingEngine::Match(std::shared_ptr<Order> order) {
+auto PerInstrumentMatchingEngine::Match(std::shared_ptr<Order> order) -> std::vector<Trade> {
   switch (order->GetSide()) {
   case Side::kBuy:
     return Match<OrderGreaterPrice, OrderLesserPrice, OrderLesserPrice>(
@@ -82,8 +82,7 @@ PerInstrumentMatchingEngine::Match(std::shared_ptr<Order> order) {
   return {};
 }
 
-std::vector<std::shared_ptr<Order>>
-PerInstrumentMatchingEngine::PurgeOrders(Side side) {
+auto PerInstrumentMatchingEngine::PurgeOrders(Side side) -> std::vector<std::shared_ptr<Order>> {
   switch (side) {
   case Side::kBuy:
     return std::move(buy_orders_);
@@ -94,7 +93,7 @@ PerInstrumentMatchingEngine::PurgeOrders(Side side) {
   return {};
 }
 
-bool PerInstrumentMatchingEngine::Cancel(const std::string &order_id) {
+auto PerInstrumentMatchingEngine::Cancel(const std::string &order_id) -> bool {
   if (!order_id_map_.count(order_id)) {
     return false;
   }

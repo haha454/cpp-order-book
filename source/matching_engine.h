@@ -18,10 +18,10 @@ private:
 
 public:
   MatchingEngine();
-  std::vector<Trade> Match(Side, std::string &&, std::string &&, unsigned int,
-                           unsigned int);
-  std::vector<std::shared_ptr<Order>> PurgeOrdersSorted();
-  bool Cancel(const std::string &, const std::string &);
+  auto Match(Side, std::string&&, std::string&&, unsigned int, unsigned int)
+      -> std::vector<Trade>;
+  auto PurgeOrdersSorted() -> std::vector<std::shared_ptr<Order>>;
+  auto Cancel(const std::string&, const std::string&) -> bool;
 };
 } // namespace matching_engine
 #endif

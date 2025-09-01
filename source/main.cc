@@ -1,31 +1,38 @@
-#include <stdio.h>
-
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "../lib/matching_engine.h"
-#include "../lib/order.h"
+#include "matching_engine.h"
+#include "order.h"
 
-template <typename T>
-std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
-  for (auto const &element : v) {
-    os << element << std::endl;
+namespace
+{
+template<typename T>
+auto operator<<(std::ostream& ostream, const std::vector<T>& vec)
+    -> std::ostream&
+{
+  for (auto const& element : vec) {
+    ostream << element << std::endl;
   }
 
-  return os;
+  return ostream;
 }
+}  // namespace
 
-int main() {
-  std::string line, order_id, instrument;
+auto main() -> int
+{
+  std::string line;
+  std::string order_id;
+  std::string instrument;
 
-  matching_engine::Side side;
-  unsigned int quantity, price;
+  matching_engine::Side side {};
+  unsigned int quantity {};
+  unsigned int price {};
   matching_engine::MatchingEngine matching_engine;
   while (std::getline(std::cin, line)) {
-    if (std::all_of(line.begin(), line.end(), isspace)) {
+    if (std::ranges::all_of(line, isspace)) {
       std::cerr << "skip the input line as it contains all spaces" << std::endl;
       continue;
     }

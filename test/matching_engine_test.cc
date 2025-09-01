@@ -1,12 +1,11 @@
-#include "../lib/matching_engine.h"
+#include "matching_engine.h"
 
 #include <memory>
 #include <vector>
 
-#include "../lib/order.h"
-#include "../lib/trade.h"
+#include "order.h"
+#include "trade.h"
 #include "order_assert_lib.h"
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 namespace matching_engine {
