@@ -6,7 +6,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "order.h"
-#include "order_assert_lib.h"
+#include "order_assert.h"
 #include "trade.h"
 
 namespace matching_engine

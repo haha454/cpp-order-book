@@ -15,7 +15,6 @@ add_executable(
         cpp-order-book_test
         matching_engine_test.cc
         per_instrument_matching_engine_test.cc
-        order_assert_lib.cc
 )
 target_link_libraries(
     cpp-order-book_test PRIVATE

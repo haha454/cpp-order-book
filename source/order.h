@@ -8,26 +8,25 @@ namespace matching_engine
 {
 class OrderBuilder;
 
-enum class Side
+enum class Side : uint8_t
 {
   kBuy,
   kSell
 };
-auto operator>>(std::istream& is, Side& side) -> std::istream&;
+auto operator>>(std::istream& istream, Side& side) -> std::istream&;
 
 class Order
 {
-private:
-  Side side_;
+  Side side_{};
   std::string id_, instrument_;
-  unsigned int quantity_, price_, timestamp_;
-  bool is_cancelled_;
+  unsigned int quantity_{}, price_{}, timestamp_{};
+  bool is_cancelled_{};
 
   friend class OrderBuilder;
   friend class OrderLesserPrice;
   friend class OrderGreaterPrice;
   friend class OrderSmallerTimestampWithSellPriority;
-  friend auto operator<<(std::ostream&, std::shared_ptr<const Order>)
+  friend auto operator<<(std::ostream&, const std::shared_ptr<const Order>&)
       -> std::ostream&;
 
 public:
@@ -47,7 +46,6 @@ public:
 
 class OrderBuilder
 {
-private:
   std::shared_ptr<Order> order_;
 
 public:
@@ -55,31 +53,31 @@ public:
   auto SetSide(Side) -> OrderBuilder&;
   auto SetId(std::string&&) -> OrderBuilder&;
   auto SetInstrument(std::string&&) -> OrderBuilder&;
-  auto SetQuantity(int) -> OrderBuilder&;
-  auto SetPrice(int) -> OrderBuilder&;
-  auto SetTimestamp(int) -> OrderBuilder&;
+  auto SetQuantity(unsigned int) -> OrderBuilder&;
+  auto SetPrice(unsigned int) -> OrderBuilder&;
+  auto SetTimestamp(unsigned int) -> OrderBuilder&;
   auto Build() -> std::shared_ptr<Order>;
 };
 
 class OrderLesserPrice
 {
 public:
-  auto operator()(std::shared_ptr<const Order>,
-                  std::shared_ptr<const Order>) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>&,
+                  const std::shared_ptr<const Order>&) const -> bool;
 };
 
 class OrderGreaterPrice
 {
 public:
-  auto operator()(std::shared_ptr<const Order>,
-                  std::shared_ptr<const Order>) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>&,
+                  const std::shared_ptr<const Order>&) const -> bool;
 };
 
 class OrderSmallerTimestampWithSellPriority
 {
 public:
-  auto operator()(std::shared_ptr<const Order>,
-                  std::shared_ptr<const Order>) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>&,
+                  const std::shared_ptr<const Order>&) const -> bool;
 };
 }  // namespace matching_engine
 #endif

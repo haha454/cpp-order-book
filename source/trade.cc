@@ -15,7 +15,6 @@ auto Trade::operator==(const Trade& other) const -> bool
 auto Trade::Builder() -> TradeBuilder
 { return {}; }
 
-TradeBuilder::TradeBuilder() {}
 auto TradeBuilder::SetOrderId(const std::string& order_id) -> TradeBuilder&
 {
   trade_.order_id_ = order_id;

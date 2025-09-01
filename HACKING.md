@@ -131,22 +131,6 @@ threads your CPU has. You may also want to add that to your preset using the
 These are targets you may invoke using the build command from above, with an
 additional `-t <target>` flag:
 
-#### `coverage`
-
-Available if `ENABLE_COVERAGE` is enabled. This target processes the output of
-the previously run tests when built with coverage configuration. The commands
-this target runs can be found in the `COVERAGE_TRACE_COMMAND` and
-`COVERAGE_HTML_COMMAND` cache variables. The trace command produces an info
-file by default, which can be submitted to services with CI integration. The
-HTML command uses the trace command's output to generate an HTML document to
-`<binary-dir>/coverage_html` by default.
-
-#### `docs`
-
-Available if `BUILD_MCSS_DOCS` is enabled. Builds to documentation using
-Doxygen and m.css. The output will go to `<binary-dir>/docs` by default
-(customizable using `DOXYGEN_OUTPUT_DIRECTORY`).
-
 #### `format-check` and `format-fix`
 
 These targets run the clang-format tool on the codebase to check errors and to

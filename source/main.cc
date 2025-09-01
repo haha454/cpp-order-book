@@ -33,7 +33,7 @@ auto main() -> int
   matching_engine::MatchingEngine matching_engine;
   while (std::getline(std::cin, line)) {
     if (std::ranges::all_of(line, isspace)) {
-      std::cerr << "skip the input line as it contains all spaces" << std::endl;
+      std::cerr << "skip the input line as it contains all spaces" << '\n';
       continue;
     }
 
@@ -51,7 +51,7 @@ auto main() -> int
     }
   }
 
-  std::cout << std::endl << matching_engine.PurgeOrdersSorted();
+  std::cout << '\n' << matching_engine.PurgeOrdersSorted();
 
   return 0;
 }
