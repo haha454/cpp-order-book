@@ -2,11 +2,10 @@
 #include <iostream>
 #include <memory>
 #include <queue>
-#include <stdexcept>
 
 #include "per_instrument_matching_engine.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "trade.h"
 #include "order.h"
@@ -78,7 +77,7 @@ auto PerInstrumentMatchingEngine::Match(std::shared_ptr<Order> order) -> std::ve
     return Match<OrderLesserPrice, OrderGreaterPrice, OrderGreaterPrice>(
         std::move(order), buy_orders_, sell_orders_);
   }
-  std::cerr << "unknown side" << std::endl;
+  std::cerr << "unknown side" << '\n';
   return {};
 }
 
@@ -89,12 +88,12 @@ auto PerInstrumentMatchingEngine::PurgeOrders(Side side) -> std::vector<std::sha
   case Side::kSell:
     return std::move(sell_orders_);
   }
-  std::cerr << "unknown side" << std::endl;
+  std::cerr << "unknown side" << '\n';
   return {};
 }
 
 auto PerInstrumentMatchingEngine::Cancel(const std::string &order_id) -> bool {
-  if (!order_id_map_.count(order_id)) {
+  if (!order_id_map_.contains(order_id)) {
     return false;
   }
 

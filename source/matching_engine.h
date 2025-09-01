@@ -10,11 +10,11 @@
 
 namespace matching_engine {
 class MatchingEngine {
-private:
-  std::unordered_map<std::string, PerInstrumentMatchingEngine> engines_;
-  int order_count_;
 
-  std::vector<std::shared_ptr<Order>> PurgeOrders(Side);
+  std::unordered_map<std::string, PerInstrumentMatchingEngine> engines_;
+  unsigned int order_count_;
+
+  auto PurgeOrders(Side) -> std::vector<std::shared_ptr<Order>>;
 
 public:
   MatchingEngine();

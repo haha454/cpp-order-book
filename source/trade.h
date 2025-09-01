@@ -9,13 +9,13 @@ class TradeBuilder;
 
 class Trade
 {
-  std::string order_id_{}, contra_order_id_{}, instrument_{};
+  std::string order_id_, contra_order_id_, instrument_;
   unsigned int quantity_{}, price_{};
 
   Trade() = default;
 
   friend class TradeBuilder;
-  friend std::ostream& operator<<(std::ostream&, const Trade&);
+  friend auto operator<<(std::ostream&, const Trade&) -> std::ostream&;
 
 public:
   auto operator==(const Trade&) const -> bool;
@@ -24,11 +24,10 @@ public:
 
 class TradeBuilder
 {
-private:
-  Trade trade_ {};
+  Trade trade_;
 
 public:
-  TradeBuilder();
+  TradeBuilder() = default;
   auto SetOrderId(const std::string&) -> TradeBuilder&;
   auto SetContraOrderId(const std::string&) -> TradeBuilder&;
   auto SetInstrument(const std::string&) -> TradeBuilder&;

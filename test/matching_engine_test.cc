@@ -1,12 +1,12 @@
-#include "matching_engine.h"
-
 #include <memory>
 #include <vector>
 
-#include "order.h"
-#include "trade.h"
-#include "order_assert_lib.h"
+#include "matching_engine.h"
+
 #include "gtest/gtest.h"
+#include "order.h"
+#include "order_assert.h"
+#include "trade.h"
 
 namespace matching_engine {
 TEST(MatchingEngineTest, MatchOrdersOfDifferentInstruments) {

@@ -3,7 +3,6 @@
 
 #include <functional>
 #include <memory>
-#include <queue>
 #include <unordered_map>
 
 #include "trade.h"
@@ -11,7 +10,7 @@
 
 namespace matching_engine {
 class PerInstrumentMatchingEngine {
-private:
+
   std::vector<std::shared_ptr<Order>> buy_orders_;
   std::vector<std::shared_ptr<Order>> sell_orders_;
   std::unordered_map<std::string, std::shared_ptr<Order>> order_id_map_;
