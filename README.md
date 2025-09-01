@@ -21,8 +21,8 @@ The same process applies for a seller order matching.
 ## No dynamic memory allocation
 Caveat: except for the STL containers default allocators.
 ## Replace `std::priority_queue` with a `std::vector`
-In my very initial implementation, I used a `std::priority_queue` as a heap. However, I realised that the element in the `std::priority_queue` is immutable, which means that I had to pop the order from the heap, modify its quantity and push it back. This is suboptimal in terms of performance. Instead, a `std::vector` is being used together with `std::pop_heap` and `std::push_heap`. This issue could also have been alleviated by using a shared pointer as the `std::priority_queue` element type; however, that approach may increases complexity and reduces readability.
-## Minimise `std::string` copies
+In my very initial implementation, I used a `std::priority_queue` as a heap. However, I realized that the element in the `std::priority_queue` is immutable, which means that I had to pop the order from the heap, modify its quantity and push it back. This is suboptimal in terms of performance. Instead, a `std::vector` is being used together with `std::pop_heap` and `std::push_heap`. This issue could also have been alleviated by using a shared pointer as the `std::priority_queue` element type; however, that approach may increases complexity and reduces readability.
+## Minimize `std::string` copies
 Most of strings are moved instead of being copied. The performance and memory gain will be more substantial if the order ID and/or the instrument exceeds 22 characters, due to C++'s short string optimization.
 
 # Future work
@@ -30,4 +30,4 @@ Most of strings are moved instead of being copied. The performance and memory ga
 1. To add integration tests.
 1. To add documentations.
 1. To add continuous integration.
-1. To utilise static code analysis tool such as `clang-tidy`.
+1. To utilize static code analysis tool such as `clang-tidy`.
