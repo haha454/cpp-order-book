@@ -1,7 +1,7 @@
 #include <memory>
 #include <vector>
 
-#include "../source/order.h"
+#include "order.h"
 
 namespace matching_engine {
 bool AreOrderPointerVectorSame(const std::vector<std::shared_ptr<Order>> &lhs,
