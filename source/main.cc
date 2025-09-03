@@ -1,7 +1,9 @@
 #include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "matching_engine.h"
@@ -30,6 +32,7 @@ auto main() -> int
   matching_engine::Side side {};
   unsigned int quantity {};
   unsigned int price {};
+  std::string instruction;
   matching_engine::MatchingEngine matching_engine;
   while (std::getline(std::cin, line)) {
     if (std::ranges::all_of(line, isspace)) {
@@ -38,7 +41,6 @@ auto main() -> int
     }
 
     std::istringstream iss(line);
-    std::string instruction;
     iss >> instruction;
     if (instruction == "CANCEL") {
       iss >> instrument >> order_id;

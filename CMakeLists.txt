@@ -18,9 +18,7 @@ include(cmake/variables.cmake)
 add_library(
         cpp-order-book_lib OBJECT
         source/matching_engine.cc
-        source/order.cc
         source/per_instrument_matching_engine.cc
-        source/trade.cc
 )
 
 target_include_directories(

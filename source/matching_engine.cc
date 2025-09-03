@@ -1,10 +1,13 @@
 #include <algorithm>
-#include <iostream>
+#include <memory>
 #include <ranges>
+#include <string>
+#include <utility>
 #include <vector>
+#include <iterator>
 
 #include "matching_engine.h"
-
+#include <trade.h>
 #include "order.h"
 
 namespace matching_engine
@@ -15,8 +18,8 @@ MatchingEngine::MatchingEngine()
 }
 
 auto MatchingEngine::Match(Side side,
-                           std::string&& order_id,
-                           std::string&& instrument,
+                           std::string order_id,
+                           std::string instrument,
                            unsigned int quantity,
                            unsigned int price) -> std::vector<Trade>
 {
@@ -25,14 +28,12 @@ auto MatchingEngine::Match(Side side,
   }
   order_count_++;
   auto& engine = engines_[instrument];
-  return engine.Match(Order::Builder()
-                          .SetSide(side)
-                          .SetId(std::move(order_id))
-                          .SetInstrument(std::move(instrument))
-                          .SetQuantity(quantity)
-                          .SetPrice(price)
-                          .SetTimestamp(order_count_)
-                          .Build());
+  return engine.Match(std::make_shared<Order>(std::move(order_id),
+                                              std::move(instrument),
+                                              price,
+                                              order_count_,
+                                              quantity,
+                                              side));
 }
 
 auto MatchingEngine::PurgeOrders(Side side)

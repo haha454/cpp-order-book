@@ -8,34 +8,26 @@
 #include "order_assert.h"
 #include "trade.h"
 
-namespace matching_engine {
-TEST(MatchingEngineTest, MatchOrdersOfDifferentInstruments) {
+namespace matching_engine
+{
+TEST(MatchingEngineTest, MatchOrdersOfDifferentInstruments)
+{
   MatchingEngine engine;
 
   engine.Match(Side::kBuy, "some id 11", "some instrument 1", 5, 100);
   engine.Match(Side::kSell, "some id 21", "some instrument 2", 4, 1000);
 
   EXPECT_EQ(engine.Match(Side::kSell, "some id 16", "some instrument 1", 3, 90),
-            (std::vector<Trade>{Trade::Builder()
-                                    .SetOrderId("some id 16")
-                                    .SetContraOrderId("some id 11")
-                                    .SetInstrument("some instrument 1")
-                                    .SetQuantity(3)
-                                    .SetPrice(100)
-                                    .Build()}));
+            (std::vector<Trade> {
+                {"some id 16", "some id 11", "some instrument 1", 3, 100}}));
   EXPECT_EQ(
       engine.Match(Side::kBuy, "some id 26", "some instrument 2", 2, 1100),
-      (std::vector<Trade>{Trade::Builder()
-                              .SetOrderId("some id 26")
-                              .SetContraOrderId("some id 21")
-                              .SetInstrument("some instrument 2")
-                              .SetQuantity(2)
-                              .SetPrice(1000)
-                              .Build()}));
+      (std::vector<Trade> {
+          {"some id 26", "some id 21", "some instrument 2", 2, 1000}}));
 }
 
-TEST(MatchingEngineTest,
-     PurgeOrdersReturnOrdersWithSellPriorityAndSequenceKept) {
+TEST(MatchingEngineTest, PurgeOrdersReturnOrdersWithSellPriorityAndSequenceKept)
+{
   MatchingEngine engine;
 
   engine.Match(Side::kBuy, "some id 11", "some instrument 1", 5, 100);
@@ -43,39 +35,17 @@ TEST(MatchingEngineTest,
   engine.Match(Side::kBuy, "some id 16", "some instrument 1", 1, 99);
   engine.Match(Side::kSell, "some id 26", "some instrument 2", 2, 999);
 
-  EXPECT_PRED2(AreOrderPointerVectorSame, engine.PurgeOrdersSorted(),
-               (std::vector<std::shared_ptr<Order>>{
-                   Order::Builder()
-                       .SetSide(Side::kSell)
-                       .SetId("some id 21")
-                       .SetInstrument("some instrument 2")
-                       .SetQuantity(4)
-                       .SetPrice(1000)
-                       .SetTimestamp(2)
-                       .Build(),
-                   Order::Builder()
-                       .SetSide(Side::kSell)
-                       .SetId("some id 26")
-                       .SetInstrument("some instrument 2")
-                       .SetQuantity(2)
-                       .SetPrice(999)
-                       .SetTimestamp(4)
-                       .Build(),
-                   Order::Builder()
-                       .SetSide(Side::kBuy)
-                       .SetId("some id 11")
-                       .SetInstrument("some instrument 1")
-                       .SetQuantity(5)
-                       .SetPrice(100)
-                       .SetTimestamp(1)
-                       .Build(),
-                   Order::Builder()
-                       .SetSide(Side::kBuy)
-                       .SetId("some id 16")
-                       .SetInstrument("some instrument 1")
-                       .SetQuantity(1)
-                       .SetPrice(99)
-                       .SetTimestamp(3)
-                       .Build()}));
+  EXPECT_PRED2(
+      AreOrderPointerVectorSame,
+      engine.PurgeOrdersSorted(),
+      (std::vector {
+          std::make_shared<Order>(
+              "some id 21", "some instrument 2", 1000, 2, 4, Side::kSell),
+          std::make_shared<Order>(
+              "some id 26", "some instrument 2", 999, 4, 2, Side::kSell),
+          std::make_shared<Order>(
+              "some id 11", "some instrument 1", 100, 1, 5, Side::kBuy),
+          std::make_shared<Order>(
+              "some id 16", "some instrument 1", 99, 3, 1, Side::kBuy)}));
 }
-} // namespace matching_engine
+}  // namespace matching_engine

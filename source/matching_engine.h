@@ -18,7 +18,7 @@ class MatchingEngine {
 
 public:
   MatchingEngine();
-  auto Match(Side, std::string&&, std::string&&, unsigned int, unsigned int)
+  auto Match(Side, std::string, std::string, unsigned int, unsigned int)
       -> std::vector<Trade>;
   auto PurgeOrdersSorted() -> std::vector<std::shared_ptr<Order>>;
   auto Cancel(const std::string&, const std::string&) -> bool;

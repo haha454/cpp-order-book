@@ -2,38 +2,44 @@
 #define TRADE_H
 
 #include <string>
+#include <ostream>
 
 namespace matching_engine
 {
-class TradeBuilder;
 
-class Trade
+struct Trade
 {
-  std::string order_id_, contra_order_id_, instrument_;
-  unsigned int quantity_{}, price_{};
+  std::string order_id, contra_order_id, instrument;
+  unsigned int quantity {}, price {};
 
-  Trade() = default;
+  Trade(std::string order_id,
+        std::string contra_order_id,
+        std::string instrument,
+        unsigned int quantity,
+        unsigned int price)
+      : order_id(std::move(order_id))
+      , contra_order_id(std::move(contra_order_id))
+      , instrument(std::move(instrument))
+      , quantity(quantity)
+      , price(price)
+  {
+  }
 
-  friend class TradeBuilder;
-  friend auto operator<<(std::ostream&, const Trade&) -> std::ostream&;
-
-public:
-  auto operator==(const Trade&) const -> bool;
-  static auto Builder() -> TradeBuilder;
+  auto operator==(const Trade& other) const -> bool
+  {
+    return order_id == other.order_id
+        && contra_order_id == other.contra_order_id
+        && instrument == other.instrument && quantity == other.quantity
+        && price == other.price;
+  }
 };
 
-class TradeBuilder
+inline auto operator<<(std::ostream& ostream, const Trade& trade)
+    -> std::ostream&
 {
-  Trade trade_;
-
-public:
-  TradeBuilder() = default;
-  auto SetOrderId(const std::string&) -> TradeBuilder&;
-  auto SetContraOrderId(const std::string&) -> TradeBuilder&;
-  auto SetInstrument(const std::string&) -> TradeBuilder&;
-  auto SetQuantity(unsigned int) -> TradeBuilder&;
-  auto SetPrice(unsigned int) -> TradeBuilder&;
-  auto Build() -> Trade;
-};
+  return ostream << "TRADE " << trade.instrument << ' ' << trade.order_id << ' '
+                 << trade.contra_order_id << ' ' << trade.quantity << ' '
+                 << trade.price;
+}
 }  // namespace matching_engine
 #endif
