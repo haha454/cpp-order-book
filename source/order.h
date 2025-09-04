@@ -3,81 +3,103 @@
 
 #include <memory>
 #include <string>
+#include <istream>
 
 namespace matching_engine
 {
-class OrderBuilder;
-
 enum class Side : uint8_t
 {
   kBuy,
   kSell
 };
-auto operator>>(std::istream& istream, Side& side) -> std::istream&;
 
-class Order
+inline auto operator>>(std::istream& istream, Side& side) -> std::istream&
 {
-  Side side_{};
-  std::string id_, instrument_;
-  unsigned int quantity_{}, price_{}, timestamp_{};
-  bool is_cancelled_{};
+  std::string raw_side;
+  istream >> raw_side;
+  if ("BUY" == raw_side) {
+    side = Side::kBuy;
+    return istream;
+  }
+  if ("SELL" == raw_side) {
+    side = Side::kSell;
+    return istream;
+  }
+  istream.setstate(std::ios_base::failbit);
+  return istream;
+}
 
-  friend class OrderBuilder;
-  friend class OrderLesserPrice;
-  friend class OrderGreaterPrice;
-  friend class OrderSmallerTimestampWithSellPriority;
-  friend auto operator<<(std::ostream&, const std::shared_ptr<const Order>&)
-      -> std::ostream&;
-
-public:
-  Order() = default;
-  auto operator==(const Order&) const -> bool;
-  auto operator!=(const Order&) const -> bool;
-  static auto Builder() -> OrderBuilder;
-  auto ReduceQuantity(unsigned int) -> void;
-  auto GetSide() const -> Side;
-  auto GetId() const -> const std::string&;
-  auto GetInstrument() const -> const std::string&;
-  auto GetQuantity() const -> unsigned int;
-  auto GetPrice() const -> unsigned int;
-  auto IsCancelled() const -> bool;
-  auto Cancel() -> void;
-};
-
-class OrderBuilder
+struct Order
 {
-  std::shared_ptr<Order> order_;
+  Order(std::string id,
+        std::string instrument,
+        unsigned int price,
+        unsigned int timestamp,
+        unsigned int quantity,
+        Side side)
+      : id(std::move(id))
+      , instrument(std::move(instrument))
+      , price(price)
+      , timestamp(timestamp)
+      , quantity(quantity)
+      , side(side)
+  {
+  }
 
-public:
-  OrderBuilder();
-  auto SetSide(Side) -> OrderBuilder&;
-  auto SetId(std::string&&) -> OrderBuilder&;
-  auto SetInstrument(std::string&&) -> OrderBuilder&;
-  auto SetQuantity(unsigned int) -> OrderBuilder&;
-  auto SetPrice(unsigned int) -> OrderBuilder&;
-  auto SetTimestamp(unsigned int) -> OrderBuilder&;
-  auto Build() -> std::shared_ptr<Order>;
+  std::string id, instrument;
+  unsigned int price {}, timestamp {};
+  unsigned int quantity {};
+  Side side;
+  bool is_cancelled {};
+
+  auto operator==(const Order& other) const -> bool
+  {
+    return side == other.side && id == other.id
+        && instrument == other.instrument && quantity == other.quantity
+        && price == other.price && timestamp == other.timestamp;
+  }
+
+  auto operator!=(const Order& other) const -> bool
+  {
+    return !(*this == other);
+  }
+
+  auto ReduceQuantity(unsigned int delta) -> void { quantity -= delta; }
+
+  auto Cancel() -> void { is_cancelled = false; }
 };
 
 class OrderLesserPrice
 {
 public:
-  auto operator()(const std::shared_ptr<const Order>&,
-                  const std::shared_ptr<const Order>&) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>& lhs,
+                  const std::shared_ptr<const Order>& rhs) const -> bool
+  {
+    return lhs->price < rhs->price
+        || (lhs->price == rhs->price && lhs->timestamp > rhs->timestamp);
+  }
 };
 
 class OrderGreaterPrice
 {
 public:
-  auto operator()(const std::shared_ptr<const Order>&,
-                  const std::shared_ptr<const Order>&) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>& lhs,
+                  const std::shared_ptr<const Order>& rhs) const -> bool
+  {
+    return lhs->price > rhs->price
+        || (lhs->price == rhs->price && lhs->timestamp > rhs->timestamp);
+  }
 };
 
 class OrderSmallerTimestampWithSellPriority
 {
 public:
-  auto operator()(const std::shared_ptr<const Order>&,
-                  const std::shared_ptr<const Order>&) const -> bool;
+  auto operator()(const std::shared_ptr<const Order>& lhs,
+                  const std::shared_ptr<const Order>& rhs) const -> bool
+  {
+    return (lhs->side == Side::kSell && rhs->side == Side::kBuy)
+        || (lhs->side == rhs->side && lhs->timestamp < rhs->timestamp);
+  }
 };
 }  // namespace matching_engine
 #endif

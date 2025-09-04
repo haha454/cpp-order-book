@@ -17,7 +17,7 @@ class PerInstrumentMatchingEngine {
 
   template <typename TargetOrderQueueComp, typename UnmatchedOrderQueueComp,
             typename UnmatchPredicate>
-  auto Match(std::shared_ptr<Order>,
+  auto Match(const std::shared_ptr<Order>&,
              std::vector<std::shared_ptr<Order>>&,
              std::vector<std::shared_ptr<Order>>&) -> std::vector<Trade>;
 
@@ -26,7 +26,7 @@ class PerInstrumentMatchingEngine {
   auto PopCancelledOrder(std::vector<std::shared_ptr<Order>>&) -> void;
 
 public:
-  auto Match(std::shared_ptr<Order>) -> std::vector<Trade>;
+  auto Match(const std::shared_ptr<Order>&) -> std::vector<Trade>;
   auto PurgeOrders(Side) -> std::vector<std::shared_ptr<Order>>;
   auto Cancel(const std::string&) -> bool;
 };
